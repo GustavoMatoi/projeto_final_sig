@@ -1,50 +1,64 @@
-# Welcome to your Expo app 👋
+# 🌧️ Sistema de Monitoramento Climático e Áreas de Risco
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Este projeto consiste em um aplicativo mobile desenvolvido com React Native e Expo, cujo objetivo é monitorar condições climáticas e alertar usuários sobre áreas de risco geográficas, utilizando dados georreferenciados em tempo real.
 
-## Get started
+O sistema integra geolocalização, dados meteorológicos e mapas interativos, oferecendo uma solução voltada à prevenção de riscos ambientais, especialmente em cenários de chuva intensa.
 
-1. Install dependencies
+---
 
-   ```bash
-   npm install
-   ```
+## 📌 Funcionalidades Principais
 
-2. Start the app
+### 📍 Geolocalização
+Utilizando a biblioteca `expo-location`, o sistema é capaz de recuperar a localização atual do usuário, obtendo informações como latitude e longitude, que servem de base para o funcionamento das demais funcionalidades.
 
-   ```bash
-   npx expo start
-   ```
+---
 
-In the output, you'll find options to open the app in a
+### 🏙️ Geocoding Reverso
+Após a obtenção das coordenadas geográficas, o sistema realiza uma operação de geocoding reverso, que consiste em converter dados geográficos em informações textuais, como o nome da cidade onde o usuário se encontra. Esse dado é utilizado para a consulta de informações meteorológicas.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+---
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### ☁️ Coleta de Dados Meteorológicos Georreferenciados
+O sistema utiliza a API da OpenWeather para a coleta de dados meteorológicos com base no nome da cidade, permitindo o acesso a informações como:
+- Temperatura;
+- Umidade do ar;
+- Velocidade do vento;
+- Condições climáticas (chuva, tempestade, entre outras).
 
-## Get a fresh project
+---
 
-When you're ready, run:
+### 🗺️ Visualização Interativa de Mapas
+A partir do uso da biblioteca `react-native-maps`, o aplicativo oferece mapas interativos, possibilitando a visualização da localização do usuário e a exibição dinâmica de marcadores geográficos.
 
-```bash
-npm run reset-project
-```
+---
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### ⚠️ Representação de Áreas de Risco Geográficas
+Com o recurso de mapas interativos, é possível realizar a marcação de áreas de risco por meio de marcadores geográficos definidos por latitude e longitude. Para evitar alarmes desnecessários, essas áreas só são exibidas quando há ocorrência de chuva.
 
-## Learn more
+---
 
-To learn more about developing your project with Expo, look at the following resources:
+### 📏 Análise de Proximidade entre Usuário e Áreas de Risco
+Com o auxílio da biblioteca `geolib`, o sistema realiza o cálculo da distância, em metros, entre a localização atual do usuário e os pontos de risco mapeados.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+---
 
-## Join the community
+### 🚨 Geração de Alertas de Risco em Tempo Real
+Caso o usuário esteja a uma distância inferior a 100 metros de uma área de risco durante condições climáticas adversas, como chuva ou tempestade, o sistema pode emitir alertas em tempo real, informando sobre os possíveis riscos de permanência naquele local.
 
-Join our community of developers creating universal apps.
+---
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## 🛠️ Tecnologias Utilizadas
+
+- React Native  
+- Expo  
+- TypeScript  
+- expo-location  
+- react-native-maps  
+- OpenWeather API  
+- geolib  
+
+---
+
+## 🎯 Objetivo do Projeto
+
+O objetivo deste projeto é aplicar conceitos de Sistemas de Informação Geográfica (SIG), integração com APIs externas e análise espacial, oferecendo uma solução que contribua para a redução de riscos socioambientais em ambientes urbanos.
