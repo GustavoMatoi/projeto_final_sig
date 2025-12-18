@@ -1,98 +1,190 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import Marcadores from "@/components/Marcadores";
+import { Ionicons } from "@expo/vector-icons";
+import Entypo from "@expo/vector-icons/Entypo";
+import React from "react";
+import {
+  Dimensions,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import MapView, { Marker } from "react-native-maps";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useHomeViewModel } from "./HomeViewModel";
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+const HomeScreen = () => {
+  const {
+    location,
+    clima,
+    loading,
+    getWeatherIcon,
+    areasDeRisco,
+    mapRegion,
+  } = useHomeViewModel();
 
-export default function HomeScreen() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+    <SafeAreaView style={{ flex: 1 }}>
+      <StatusBar barStyle="light-content" />
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      {mapRegion ? (
+        <>
+          <MapView style={StyleSheet.absoluteFillObject} region={mapRegion}>
+            <Marker
+              coordinate={{
+                latitude: mapRegion.latitude,
+                longitude: mapRegion.longitude,
+              }}
+              pinColor="red"
+              title="Você está aqui"
+            />
+
+            {areasDeRisco.map((item) => (
+              <Marcadores
+                key={item.id}
+                item={item}
+                distanciaLat={mapRegion.latitude}
+                distanciaLong={mapRegion.longitude}
+              />
+            ))}
+          </MapView>
+
+          <View style={styles.alertaClima}>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+              {clima && (
+                <Ionicons
+                  name={getWeatherIcon(clima.main).name as any}
+                  size={28}
+                  color={getWeatherIcon(clima.main).color}
+                />
+              )}
+
+              <Text style={styles.alertaTitulo}>Clima Atual</Text>
+            </View>
+
+            {loading ? (
+              <Text style={styles.alertaTexto}>Carregando clima...</Text>
+            ) : clima ? (
+              <>
+                <Text style={styles.alertaTexto}>
+                  {Math.round(clima.temperature)}°C • {clima.description}
+                </Text>
+                <Text style={styles.alertaAviso}>
+                  Umidade: {clima.humidity}% • Vento: {clima.wind} m/s
+                </Text>
+              </>
+            ) : (
+              <Text style={styles.alertaTexto}>Clima indisponível</Text>
+            )}
+          </View>
+
+          <View style={styles.legenda}>
+            <Text style={styles.legendaTitulo}>Legenda</Text>
+
+            <View style={styles.legendaItem}>
+              <Entypo name="location-pin" size={24} color="red" />
+              <Text style={styles.legendaTexto}>Sua localização</Text>
+            </View>
+
+            <View style={styles.legendaItem}>
+              <Entypo name="location-pin" size={24} color="gold" />
+              <Text style={styles.legendaTexto}>Risco moderado</Text>
+            </View>
+
+            <View style={styles.legendaItem}>
+              <Entypo name="location-pin" size={24} color="blue" />
+              <Text style={styles.legendaTexto}>Áreas de inundação</Text>
+            </View>
+          </View>
+        </>
+      ) : (
+        <View style={styles.loading}>
+          <Text style={styles.loadingText}>Carregando mapa...</Text>
+        </View>
+      )}
+    </SafeAreaView>
   );
-}
+};
+
+
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  alertaClima: {
+    position: "absolute",
+    top: 20,
+    left: 20,
+    right: 20,
+    backgroundColor: "rgba(255, 255, 255, 0.95)",
+    padding: 15,
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
-  stepContainer: {
-    gap: 8,
+  alertaTitulo: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 5,
+  },
+  alertaTexto: {
+    fontSize: 14,
+    color: "#555",
+    marginBottom: 3,
+  },
+  alertaAviso: {
+    fontSize: 12,
+    color: "#777",
+    fontStyle: "italic",
+  },
+  legenda: {
+    position: "absolute",
+    bottom: 20,
+    left: 20,
+    backgroundColor: "rgba(255, 255, 255, 0.95)",
+    padding: 15,
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  legendaTitulo: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 10,
+  },
+  legendaItem: {
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 8,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  legendaCor: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    marginRight: 10,
+    borderWidth: 1,
+    borderColor: "#ddd",
+  },
+  legendaTexto: {
+    fontSize: 13,
+    color: "#555",
+  },
+  loading: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f5f5f5",
+  },
+  loadingText: {
+    fontSize: 16,
+    color: "#666",
   },
 });
+
+export default HomeScreen;
