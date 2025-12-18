@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useHomeViewModel } from "./HomeViewModel";
+import { useHomeViewModel } from "../../hooks/HomeViewModel";
 
 const HomeScreen = () => {
   const {
